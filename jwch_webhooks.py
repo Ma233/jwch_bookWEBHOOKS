@@ -13,11 +13,11 @@ ROOT_PATH = '/home/group/jwch_bookWEBHOOKS/jwch-book/'
 def web_hooks():
     logging.warning(request.remote_addr)
 
-    '''ip地址限定'''
-    ip = request.remote_addr.split('.')
-    if ip[0] != '192' or ip[1] != '30' or int(ip[2])<252:
-        abort(403)
-    logging.warning("ipAddr is OK")
+    #'''ip地址限定'''
+    #ip = request.remote_addr.split('.')
+    #if ip[0] != '192' or ip[1] != '30' or int(ip[2])<252:
+    #    abort(403)
+    #logging.warning("ipAddr is OK")
 
     if request.method == 'POST':
         '''获取pusher信息'''
