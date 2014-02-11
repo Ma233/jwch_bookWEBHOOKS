@@ -15,7 +15,7 @@ def web_hooks():
 
     '''ip地址限定'''
     ip = request.remote_addr.split('.')
-    if ip[0] != 192 or ip[1] != 30 or ip[2]<252:
+    if ip[0] != '192' or ip[1] != '30' or int(ip[2])<252:
         abort(403)
     logging.warning("ipAddr is OK")
 
