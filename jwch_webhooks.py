@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 from flask import Flask, request, abort
-import os, subprocess, time, logging
+import os, subprocess, time, logging, json
 
 app = Flask(__name__)
 
@@ -22,7 +22,7 @@ def web_hooks():
     if request.method == 'POST':
         '''获取pusher信息'''
         logging.warning("in POST")
-        pusher = request.form['pusher']
+        pusher = json.loads(request.form['payload'])['pusher']
         logging.warning("pusher is "+pusher["name"])
 
         '''打开记录文件'''
