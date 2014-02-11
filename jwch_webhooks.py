@@ -11,6 +11,7 @@ ROOT_PATH = '/home/group/jwch_bookWEBHOOKS/jwch-book/'
 
 @app.route('/', methods=['GET','POST'])
 def web_hooks():
+    logging.warning("it worked~")
 
     '''ip地址限定'''
     ip = request.remote_addr.split('.')
