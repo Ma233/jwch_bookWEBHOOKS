@@ -21,6 +21,7 @@ def web_hooks():
 
     if request.method == 'POST':
         '''获取pusher信息'''
+        logging.warning("in POST")
         pusher = request.form['pusher']
         logging.warning("pusher is "+pusher["name"])
 
