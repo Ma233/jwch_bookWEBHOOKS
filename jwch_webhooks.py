@@ -55,23 +55,27 @@ def web_hooks():
         logging.warning("write time and pusher")
 
         '''更新本地仓库'''
-        cmdProcess('cd '+ROOT_PATH+' && git pull')
-        logging.warning("Realoading...")
+        if cmdProcess('cd '+ROOT_PATH+' && git pull') == False:
+            wFILE.write('GitPullFailed\n')
+            wFILE.close()
+            os.system('cd '+ROOT_PATH+' && make rsync')
+            return 'git pull failed'
 
         '''尝试重启服务'''
+        logging.warning("Realoading jwch_book...")
         if cmdProcess('cd '+ROOT_PATH+' && make html') == False:
             cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeHtmlFailed\n')
             wFILE.close()
             os.system('cd '+ROOT_PATH+' && make rsync')
-            return 'failed'
+            return 'make html failed'
 
         if cmdProcess('cd '+ROOT_PATH+' && make rsync') == False:
             cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeRsyncFailed\n')
             wFILE.close()
             os.system('cd '+ROOT_PATH+' && make rsync')
-            return 'failed'
+            return 'make rsync failed'
 
         '''重启成功'''
         wFILE.write('Success!\n')
