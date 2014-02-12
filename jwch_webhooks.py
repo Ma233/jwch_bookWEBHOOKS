@@ -19,7 +19,7 @@ def ipIdent(ip):
 def cmdProcess(cmd):
     '''执行接受的命令，返回布尔值,并在输出流中留下记录'''
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=-1)
-    wrongInfo = p.stderr.read
+    wrongInfo = p.stderr.read()
     if wrongInfo == '':                          
         logging.warning(cmd+" Done!")
         return True
