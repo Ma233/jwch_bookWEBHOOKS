@@ -5,22 +5,44 @@ import os, subprocess, time, logging, json
 
 app = Flask(__name__)
 
-'''网站根目录的路径，最好使用绝对路径'''
+'''网站根目录的路径，推荐使用绝对路径'''
 ROOT_PATH = '/home/group/jwch_bookWEBHOOKS/jwch-book/'
+
+def ipIdent(ip):
+    '''用于限定ip地址'''
+    ip = ip.split('.')
+    if ip[0] != '192' or ip[1] != '30' or int(ip[2])<252:
+        logging.warning("The "+ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3]+".")
+        abort(403)
+    logging.warning("ipAddr is OK")
+
+def cmdProcess(cmd):
+    '''执行接受的命令，返回布尔值,并在输出流中留下记录'''
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=-1)
+    wrongInfo = p.stderr.read
+    if wrongInfo == '':                          
+        logging.warning(cmd+" Done!")
+        return True
+    else:
+        logging.warning(cmd+" Failed!")
+        logging.error(wrongInfo)
+        return False
+    
+def JudgeAndRecord():
+    pass
+
+
 
 
 @app.route('/', methods=['GET','POST'])
 def web_hooks():
-    logging.warning(request.remote_addr)
 
-    #'''ip地址限定'''
-    #ip = request.remote_addr.split('.')
-    #if ip[0] != '192' or ip[1] != '30' or int(ip[2])<252:
-    #    abort(403)
-    #logging.warning("ipAddr is OK")
+    #ipIdent(request.remote_addr)
+
+    if request.method == 'GET':
+        return 'jwch_book自动更新系统，具体用法：保密……'
 
     if request.method == 'POST':
-        '''获取pusher信息'''
         logging.warning("in POST")
         pusher = json.loads(request.form['payload'])['pusher']
         logging.warning("pusher is "+pusher["name"])
@@ -33,27 +55,23 @@ def web_hooks():
         logging.warning("write time and pusher")
 
         '''更新本地仓库'''
-        os.system('cd '+ROOT_PATH+' && git pull')
-        logging.warning("git pull success, realoading...")
+        cmdProcess('cd '+ROOT_PATH+' && git pull')
+        logging.warning("Realoading...")
 
         '''尝试重启服务'''
-        p = subprocess.Popen('cd '+ROOT_PATH+' && make html', shell=True, stdout=subprocess.PIPE, stderr=-1)
-        if p.stderr.read() != '':
-            os.system('cd '+ROOT_PATH+' && git reset --hard')
+        if cmdProcess('cd '+ROOT_PATH+' && make html') == False:
+            cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeHtmlFailed\n')
             wFILE.close()
-            logging.error("make html failed")
+            os.system('cd '+ROOT_PATH+' && make rsync')
             return 'failed'
-        logging.warning("make html success")
 
-        p = subprocess.Popen('cd '+ROOT_PATH+' && make rsync', shell=True, stdout=subprocess.PIPE, stderr=-1)
-        if p.stderr.read() != '':
-            os.system('cd '+ROOT_PATH+' && git reset --hard')
+        if cmdProcess('cd '+ROOT_PATH+' && make rsync') == False:
+            cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeRsyncFailed\n')
             wFILE.close()
-            logging.error("make rsync failed")
+            os.system('cd '+ROOT_PATH+' && make rsync')
             return 'failed'
-        logging.warning("make rsync success")
 
         '''重启成功'''
         wFILE.write('Success!\n')
