@@ -38,7 +38,7 @@ def web_hooks():
 
         '''尝试重启服务'''
         p = subprocess.Popen('cd '+ROOT_PATH+' && make html', shell=True, stdout=subprocess.PIPE, stderr=-1)
-        logging.error(p.stderr.read())
+        #logging.error(p.stderr.read())
         if p.stderr.read() != '':
             os.system('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeHtmlFailed\n')
