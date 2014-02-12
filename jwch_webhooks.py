@@ -38,20 +38,22 @@ def web_hooks():
 
         '''尝试重启服务'''
         p = subprocess.Popen('cd '+ROOT_PATH+' && make html', shell=True, stdout=subprocess.PIPE, stderr=-1)
-        #logging.error(p.stderr.read())
         if p.stderr.read() != '':
             os.system('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeHtmlFailed\n')
             wFILE.close()
             logging.error("make html failed")
             return
+        logging.warning("make html success")
+
         p = subprocess.Popen('cd '+ROOT_PATH+' && make rsync', shell=True, stdout=subprocess.PIPE, stderr=-1)
-        if p.stdeer.read() != '':
+        if p.stderr.read() != '':
             os.system('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeRsyncFailed\n')
             wFILE.close()
             logging.error("make rsync failed")
             return
+        logging.warning("make rsync success")
 
         '''重启成功'''
         wFILE.write('Success!\n')
