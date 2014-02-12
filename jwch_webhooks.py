@@ -28,7 +28,7 @@ def web_hooks():
         '''打开记录文件'''
         if(os.path.exists(ROOT_PATH+'_build/html/record.txt')!=True):
            os.system('touch _build/html/record.txt')
-        wFILE=open(ROOT_PATH+'_build/html/record.txt', 'wa')
+        wFILE=open(ROOT_PATH+'_build/html/record.txt', 'a')
         wFILE.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())+'\t'+pusher["name"]+'\t')
         logging.warning("write time and pusher")
 
