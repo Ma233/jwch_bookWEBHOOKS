@@ -43,7 +43,7 @@ def web_hooks():
             wFILE.write('MakeHtmlFailed\n')
             wFILE.close()
             logging.error("make html failed")
-            return
+            return 'failed'
         logging.warning("make html success")
 
         p = subprocess.Popen('cd '+ROOT_PATH+' && make rsync', shell=True, stdout=subprocess.PIPE, stderr=-1)
@@ -52,14 +52,14 @@ def web_hooks():
             wFILE.write('MakeRsyncFailed\n')
             wFILE.close()
             logging.error("make rsync failed")
-            return
+            return 'failed'
         logging.warning("make rsync success")
 
         '''重启成功'''
         wFILE.write('Success!\n')
         wFILE.close()
         logging.warning("Done! ^_^  ")
-        return
+        return 'success'
 
 #if __name__=='__main__':
 #    app.run()
