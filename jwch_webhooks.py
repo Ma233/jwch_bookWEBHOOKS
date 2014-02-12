@@ -55,11 +55,7 @@ def web_hooks():
         logging.warning("write time and pusher")
 
         '''更新本地仓库'''
-        if cmdProcess('cd '+ROOT_PATH+' && git pull') == False:
-            wFILE.write('GitPullFailed\n')
-            wFILE.close()
-            os.system('cd '+ROOT_PATH+' && make rsync')
-            return 'git pull failed'
+        os.system('cd '+ROOT_PATH+' && git pull')
 
         '''尝试重启服务'''
         logging.warning("Realoading jwch_book...")
