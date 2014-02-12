@@ -57,6 +57,7 @@ def web_hooks():
 
         '''重启成功'''
         wFILE.write('Success!\n')
+        os.system('cd '+ROOT_PATH+' && make rsync')
         wFILE.close()
         logging.warning("Done! ^_^  ")
         return 'success'
