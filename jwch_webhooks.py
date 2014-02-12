@@ -28,7 +28,7 @@ def web_hooks():
         '''打开记录文件'''
         if(os.path.exists(ROOT_PATH+'_build/html/record.txt')!=True):
            os.system('touch _build/html/record.txt')
-        wFILE=open(ROOT_PATH+'_build/html/record.txt', 'w+')
+        wFILE=open(ROOT_PATH+'_build/html/record.txt', 'wa')
         wFILE.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())+'\t'+pusher["name"]+'\t')
         logging.warning("write time and pusher")
 
@@ -38,15 +38,16 @@ def web_hooks():
 
         '''尝试重启服务'''
         p = subprocess.Popen('cd '+ROOT_PATH+' && make html', shell=True, stdout=subprocess.PIPE, stderr=-1)
+        logging.error(p.stderr.read())
         if p.stderr.read() != '':
-            os.system('cd '+ROOT_PATH+' && git reset --HARD')
+            os.system('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeHtmlFailed\n')
             wFILE.close()
             logging.error("make html failed")
             return
         p = subprocess.Popen('cd '+ROOT_PATH+' && make rsync', shell=True, stdout=subprocess.PIPE, stderr=-1)
         if p.stdeer.read() != '':
-            os.system('cd '+ROOT_PATH+' && git reset --HARD')
+            os.system('cd '+ROOT_PATH+' && git reset --hard')
             wFILE.write('MakeRsyncFailed\n')
             wFILE.close()
             logging.error("make rsync failed")
