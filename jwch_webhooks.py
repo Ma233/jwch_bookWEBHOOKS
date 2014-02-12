@@ -22,11 +22,11 @@ def cmdProcess(cmd):
     wrongInfo = p.stderr.read()
     if wrongInfo == '':                          
         logging.warning(cmd+" Done!")
-        return True
+        return None
     else:
-        logging.warning(cmd+" Failed!")
+        logging.error(cmd+" ERROR!")
         logging.error(wrongInfo)
-        return False
+        return wrongInfo
     
 def JudgeAndRecord():
     pass
@@ -51,34 +51,32 @@ def web_hooks():
         if(os.path.exists(ROOT_PATH+'_build/html/record.txt')!=True):
            os.system('touch _build/html/record.txt')
         wFILE=open(ROOT_PATH+'_build/html/record.txt', 'a')
-        wFILE.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())+'\t'+pusher["name"]+'\t')
+        wFILE.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())+'\t'+pusher["name"]+'\tdebug:\n')
         logging.warning("write time and pusher")
 
         '''更新本地仓库'''
         os.system('cd '+ROOT_PATH+' && git pull')
 
-        '''尝试重启服务'''
+        '''重启服务并记录错误'''
         logging.warning("Realoading jwch_book...")
-        if cmdProcess('cd '+ROOT_PATH+' && make html') == False:
-            cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
-            wFILE.write('MakeHtmlFailed\n')
-            wFILE.close()
-            os.system('cd '+ROOT_PATH+' && make rsync')
-            return 'make html failed'
 
-        if cmdProcess('cd '+ROOT_PATH+' && make rsync') == False:
-            cmdProcess('cd '+ROOT_PATH+' && git reset --hard')
-            wFILE.write('MakeRsyncFailed\n')
-            wFILE.close()
-            os.system('cd '+ROOT_PATH+' && make rsync')
-            return 'make rsync failed'
+        wrongInfo = cmdProcess('cd '+ROOT_PATH+' && make html')
+        if wrongInfo:
+            wFILE.write('Make Html Error\n')
+            wFILE.write(wrongInfo)
 
-        '''重启成功'''
-        wFILE.write('Success!\n')
+        wrongInfo = cmdProcess('cd '+ROOT_PATH+' && make rsync')
+        if wrongInfo:
+            wFILE.write('Make Rsync Error\n')
+            wFILE.write(wrongInfo)
+
+        if wrongInfo == None:
+            wFILE.write('Success!\n')
+
         os.system('cd '+ROOT_PATH+' && make rsync')
         wFILE.close()
         logging.warning("Done! ^_^  ")
-        return 'success'
+        return 'http://jwch.sdut.edu.cn/book/record.txt'
 
 #if __name__=='__main__':
 #    app.run()
