@@ -73,8 +73,8 @@ def web_hooks():
         if wrongInfo == None:
             wFILE.write('Success!\n')
 
-        os.system('cd '+ROOT_PATH+' && make rsync')
         wFILE.close()
+        os.system('cd '+ROOT_PATH+' && make rsync')
         logging.warning("Done! ^_^  ")
         return 'http://jwch.sdut.edu.cn/book/record.txt'
 
